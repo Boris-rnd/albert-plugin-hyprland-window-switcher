@@ -2,6 +2,7 @@
 # Copyright (c) 2017 Benedict Dudel
 # Copyright (c) 2023 Max
 # Copyright (c) 2023 Pete-Hamlin
+# No copyright for Boris-rnd, I made it in 5 mins
 
 import subprocess
 import subprocess,json
@@ -34,15 +35,7 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
         return "<window-name>"
 
     def configWidget(self):
-        return [
-            # {"type": "checkbox", "property": "use_otp", "label": "Enable pass OTP extension"},
-            # {
-            #     "type": "lineedit",
-            #     "property": "otp_glob",
-            #     "label": "Glob pattern for OTP passwords",
-            #     "widget_properties": {"placeholderText": "*-otp.gpg"},
-            # },
-        ]
+        return []
 
     def items(self, context: QueryContext):
         q = context.query.strip()
@@ -54,10 +47,12 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
         clients = json.loads(clients.stdout)
         results = []
         for client in clients:
-            print(client["title"])
-            print(client["workspace"]["name"])
-            print(client["monitor"])
-            
+            if client["title"] == "":
+                continue
+            if client["class"] == "albert":
+                continue
+            if q.lower() not in client["title"].lower():
+                continue
             results.append(StandardItem(
                 id=client["address"],
                 text=client["title"],
@@ -73,39 +68,3 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
                 ],
             ))
         yield results
-
-
-
-
-#             {
-#     "address": "0x55946cbace30",
-#     "mapped": true,
-#     "hidden": false,
-#     "at": [624, 52],
-#     "size": [772, 521],
-#     "workspace": {
-#         "id": 10,
-#         "name": "10"
-#     },
-#     "floating": true,
-#     "monitor": 0,
-#     "class": "albert",
-#     "title": "Albert",
-#     "initialClass": "albert",
-#     "initialTitle": "Albert",
-#     "pid": 1236626,
-#     "xwayland": false,
-#     "pinned": true,
-#     "fullscreen": 0,
-#     "fullscreenClient": 0,
-#     "overFullscreen": true,
-#     "grouped": [],
-#     "tags": [],
-#     "swallowing": "0x0",
-#     "focusHistoryID": 0,
-#     "inhibitingIdle": false,
-#     "xdgTag": "",
-#     "xdgDescription": "",
-#     "contentType": "none",
-#     "stableId": "18000172"
-# }]
